@@ -18,5 +18,12 @@ export const getValidation = [
 ];
 
 export const createOrganizationValidation = [
-  param('id').isUUID()
+  body('type').isString().custom((value) => {
+    if (value !== 'ORGANIZATION') {
+      return Promise.reject('type must be ORGANIZATION');
+    }
+    return true;
+  }),
+  body('id').isUUID(),
+  body('code').isString()
 ];

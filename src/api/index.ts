@@ -1,6 +1,8 @@
 import express from 'express';
 import { validationResult } from 'express-validator';
 
+import { OrganizationService } from 'src/services/organization';
+
 import { createOrganizationValidation, createShipmentValidation, getValidation } from './validations';
 
 export async function startHTTPS(): Promise<any> {
@@ -22,35 +24,69 @@ export async function startHTTPS(): Promise<any> {
     res.status(200).json('OK');
   });
 
-  app.post('/organization', ...createOrganizationValidation, (req: any, res: any) => {
+  app.post('/organization', ...createOrganizationValidation, async (req: any, res: any) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    console.log('/organization');
+    try {
+      await OrganizationService.upsertOrganization({
+        id: req.body.id,
+        code: req.body.code
+      });
+    } catch (e: any) {
+      return res.sendStatus(500);
+    }
 
-    res.status(200).json('OK');
+    res.status(200).json({
+      id: req.body.id,
+      code: req.body.code
+    });
   });
 
-  app.get('/shipments/:referenceId', ...getValidation, (req: any, res: any) => {
+  app.get('/shipments/:referenceId', ...getValidation, async (req: any, res: any) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    console.log('/shipments/referenceid');
 
-    res.status(200).json('OK');
+    let response;
+    try {
+      response = await OrganizationService.getOrganization({
+        id: req.body.id
+      });
+    } catch (e: any) {
+      return res.sendStatus(500);
+    }
+
+    if (!response) {
+      return res.status(400).string('Bad request: ID not found');
+    }
+
+    res.status(200).json(response);
   });
 
-  app.get('/organizations/:id', ...getValidation, (req: any, res: any) => {
+  app.get('/organizations/:id', ...getValidation, async (req: any, res: any) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    console.log('/organizations/referenceid');
 
-    res.status(200).json('OK');
+    let response;
+    try {
+      response = await OrganizationService.getOrganization({
+        id: req.params.id
+      });
+    } catch (e: any) {
+      return res.status(500).json(e);
+    }
+
+    if (!response) {
+      return res.status(400).string('Bad request: ID not found');
+    }
+
+    res.status(200).json(response);
   });
 
   const server = app.listen(port, () => {

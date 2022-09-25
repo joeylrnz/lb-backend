@@ -27,13 +27,21 @@ paths:
             schema:
               type: object
               required:
+                - type
+                - id
                 - code
               properties:
+                type:
+                  type: string
+                  enum: [ORGANIZATION]
                 code:
                   $ref: "#/components/schemas/Code"
+                id:
+                  type: string
+                  format: uuid
       responses:
         "200":
-          description: Organization registered successfully
+          description: Organization registered or updated successfully
           content:
             application/json:
               schema:
@@ -43,6 +51,9 @@ paths:
                     type: string
                     format: uuid
                     description: Unique identifier of the registered organization in the system
+                  code:
+                    type: string
+                    description: Code for organization
         "400":
           $ref: "#/components/responses/400"
         "401":

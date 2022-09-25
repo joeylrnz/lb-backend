@@ -2,6 +2,7 @@ import { Knex } from 'knex';
 import { parse } from 'pg-connection-string';
 
 const knexConfig: Knex.Config = {
+  debug: true,
   client: 'pg',
   connection: (): Knex.PgConnectionConfig => {
     const dbConfig = parse(process.env.DATABASE_URL || '');
