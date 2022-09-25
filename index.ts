@@ -1,22 +1,23 @@
-const express = require('express')
-const bodyParser = require("body-parser");
+import bodyParser from 'body-parser';
+import express from 'express';
 
-const app = express()
+const app = express();
 app.use(bodyParser.json());
-const port = 3000
+const port = 3000;
 
-app.post('/shipment', async (req: any, res: any) => {
-})
+app.post('/shipment', async (_req: any, _res: any) => {
+});
 
-app.post('/organization', (req: any, res: any) => {
-})
+app.post('/organization', (_req: any, _res: any) => {
+});
 
-app.get('/shipments/:referenceId', (req: any, res: any) => {
-})
+app.get('/shipments/:referenceId', (_req: any, _res: any) => {
+});
 
-app.get('/organizations/:id', (req: any, res: any) => {
-})
+app.get('/organizations/:id', (_req: any, _res: any) => {
+});
 
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`)
-})
+  // eslint-disable-next-line no-console
+  console.log(`Example app listening at http://localhost:${port}`);
+});

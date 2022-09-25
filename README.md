@@ -45,11 +45,12 @@ to Org relationships accurately is key in storing the data.
 The data model is fairly simple in what you'll receive. You can inspect the data in `messages.ts`
 to see what they look like. Each message is a **complete snapshot** of the object **at that time**.
 Thus, you are receiving ALL the data for a given object in each message, not just what has changed.
-Don't worry about tracking intermediate states or object history, we only care about the most up to
+**Don't worry about tracking intermediate states or object history**, we only care about the most up to
 date view of a given object.
 
 Your API should save the given object to maintain accurate data for later access. Feel free to use
 a persistence layer of your choosing that satisfies the requirements.
+**to address this, I will use a dockerized postgresql instance**
 
 Running `npm run send` will hit the appropriate API given the message type. You may use this to
 test your API.

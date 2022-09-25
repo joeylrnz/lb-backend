@@ -1,0 +1,148 @@
+env:
+  es2021: true
+  node: true
+extends:
+  - 'eslint:recommended'
+  - 'plugin:@typescript-eslint/recommended'
+  - 'plugin:import/typescript'
+parser: '@typescript-eslint/parser'
+parserOptions:
+  ecmaVersion: 12
+  sourceType: module
+plugins:
+  - '@typescript-eslint'
+  - import
+  - import-newlines
+settings:
+  import/internal-regex: ^src/
+rules:
+  '@typescript-eslint/ban-types':
+    - warn
+    - types:
+        '{}': |-
+          `{}` actually means 'any non-nullish value'.
+          - If you want a type meaning 'any object', you probably want `Record<string, unknown>` instead.
+          - If you want a type meaning 'any value', you probably want `unknown` instead.
+          - If you want a type meaning 'empty object', you probably want `Record<string, never>` instead.
+  '@typescript-eslint/explicit-module-boundary-types':
+    - warn
+    - allowArgumentsExplicitlyTypedAsAny: true
+      allowDirectConstAssertionInArrowFunctions: true
+      allowHigherOrderFunctions: true
+      allowTypedFunctionExpressions: true
+  '@typescript-eslint/indent':
+    - error
+    - 2
+    - SwitchCase: 1
+  '@typescript-eslint/no-empty-function':
+    - off
+  '@typescript-eslint/no-empty-interface':
+    - off
+  '@typescript-eslint/no-explicit-any':
+    - off
+  '@typescript-eslint/no-non-null-assertion':
+    - off
+  '@typescript-eslint/no-unused-vars':
+    - error
+    -
+      argsIgnorePattern: '^_'
+  '@typescript-eslint/object-curly-spacing':
+    - error
+    - always
+  block-spacing:
+    - error
+  brace-style:
+    - error
+    - 1tbs
+    - allowSingleLine: true
+  comma-spacing:
+    - error
+    - after: true
+      before: false
+  comma-style:
+    - error
+    - last
+  curly:
+    - error
+    - all
+  eqeqeq:
+    - error
+    - always
+  function-call-argument-newline:
+    - error
+    - consistent
+  import/order:
+    - error
+    - alphabetize:
+        order: asc
+        caseInsensitive: true
+      groups:
+        - builtin
+        - external
+        - internal
+        - parent
+        - sibling
+        - index
+        - object
+        - type
+      newlines-between: always-and-inside-groups
+  import-newlines/enforce:
+    - error
+    - items: 3
+      max-len: 119
+      semi: true
+  key-spacing:
+    - error
+    - afterColon: true
+      beforeColon: false
+      mode: strict
+  keyword-spacing:
+    - error
+    - after: true
+      before: true
+  linebreak-style:
+    - error
+    - unix
+  max-statements-per-line:
+    - error
+    - max: 1
+  no-console:
+    - error
+    - allow:
+        - error
+        - warn
+  no-empty:
+    - error
+    - allowEmptyCatch: true
+  no-lonely-if:
+    - error
+  no-multiple-empty-lines:
+    - error
+    - max: 1
+  no-multi-spaces:
+    - error
+  operator-linebreak:
+    - error
+    - before
+  prefer-arrow-callback:
+    - error
+    - allowNamedFunctions: true
+  prefer-const:
+    - error
+    - destructuring: all
+  quotes:
+    - error
+    - single
+    - avoidEscape: true
+  rest-spread-spacing:
+    - error
+    - never
+  semi:
+    - error
+    - always
+  semi-style:
+    - error
+    - last
+  spaced-comment:
+    - error
+    - always
