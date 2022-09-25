@@ -1,0 +1,23 @@
+services:
+  logixboard-backend:
+    build:
+      context: "./"
+      dockerfile: "Dockerfile"
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./.env
+    volumes:
+      - "./:/usr/app"
+    depends_on:
+      - logixboard-db
+  logixboard-db:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: logixboard_db
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+    ports:
+      - "5432:5432"
