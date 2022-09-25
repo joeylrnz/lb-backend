@@ -1,0 +1,246 @@
+openapi: 3.0.0
+info:
+  description: |-
+    Backend Challenge for Logixboard Senior Software Engineer position.
+  version: "1"
+  title: Backend Challenge
+  contact:
+    email: joey.lorenzo@gmail.com
+servers:
+  - description: Localhost test server
+    url: "http://localhost#:3001/"
+tags:
+  - name: Shipments
+    description: Requests regarding Shipments
+  - name: Organizations
+    description: Requests regarding Organizations
+paths:
+  /organization:
+    post:
+      tags:
+        - Organizations
+      summary: Create an organization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+              properties:
+                code:
+                  $ref: "#/components/schemas/Code"
+      responses:
+        "200":
+          description: Organization registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    description: Unique identifier of the registered organization in the system
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+  /organizations/{id}:
+    get:
+      tags:
+        - Organizations
+      summary: Return all information from the requested organization id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+  /shipment:
+    post:
+      tags:
+        - Shipments
+      summary: Register a shipment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Shipment"
+      responses:
+        "200":
+          description: Shipment successfully registered, returning unique identifier in the system
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    description: Unique identifier of the registered shipment in the system
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+  /shipments/{id}:
+    get:
+      tags:
+        - Shipments
+      summary: Return all information from the requested shipment id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Shipment"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+components:
+  responses:
+    "400":
+      description: Bad request.
+    "401":
+      description: Unauthorized.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "User not authenticated."
+    "403":
+      description: Forbidden.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "User not authorized."
+    "404":
+      description: Not found.
+    "500":
+      description: Internal server error.
+    default:
+      description: Unknown error.
+  schemas:
+    Shipment:
+      type: object
+      required:
+        - type
+        - referenceId
+        - organizations
+        - transportPacks
+      properties:
+        type:
+          type: string
+          enum: [SHIPMENT]
+          description: Type of the object. Only Shipment allowed.
+        referenceId:
+          type: string
+          example: "S00001175"
+          description: Arbitrary reference to this shipment
+        organizations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Organization"
+        TransportPacks:
+          $ref: "#/components/schemas/TransportPacks"
+    Organization:
+      type: object
+      required:
+        - type
+        - id
+        - code
+      properties:
+        type:
+          type: string
+          enum: [ORGANIZATION]
+          description: Type of the object. Only ORGANIZATION allowed.
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the Organization
+        code:
+          type: string
+          description: Code for the Organization
+    TransportPacks:
+      type: object
+      required:
+        - nodes
+      properties:
+        nodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Node"
+    Node:
+      type: object
+      required:
+        - totalWeight
+      properties:
+        totalWeight:
+          type: object
+          required:
+            - weight
+            - unit
+          properties:
+            weight:
+              type: integer
+              description: Numeric value of the node weight
+            unit:
+              type: string
+              description: Measurement unit the weight is calculated in
+    Code:
+      type: string
+      description: Code for the Organization
