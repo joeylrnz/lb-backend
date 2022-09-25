@@ -1,20 +1,42 @@
 {
     "compilerOptions": {
-        "allowJs": true,
-        "alwaysStrict": true,
-        "baseUrl": ".",
-        "esModuleInterop": true,
-        "lib": ["ES2018"],
-        "module": "CommonJS",
-        "moduleResolution": "Node",
-        "noImplicitAny": true,
-        "outDir": ".build",
-        "preserveConstEnums": true,
-        "resolveJsonModule": true,
-        "rootDir": ".",
-        "skipLibCheck": true,
+        "target": "ES6",
+        "module": "commonjs",
+        "newLine": "LF",
         "sourceMap": true,
-        "strictNullChecks": true,
-        "target": "ES2018"
+        "skipLibCheck": true,
+        "strict": true,
+        "declaration": true,
+        "esModuleInterop": true,
+        "baseUrl": ".",
+        "outDir": ".build",
+        "paths": {
+            "*": [
+                "*"
+            ],
+            "src/*": [
+                "src/*"
+            ]
+        },
+        "moduleResolution": "node",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "lib": [
+            "esnext"
+        ],
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "resolveJsonModule": true,
+        "strictPropertyInitialization": false
     },
+    "include": [
+        "./src/**/*",
+        "./migrations/**/*"
+    ],
+    "exclude": [
+        ".git",
+        "node_modules"
+    ]
 }
