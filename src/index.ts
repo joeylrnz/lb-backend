@@ -1,23 +1,33 @@
-import bodyParser from 'body-parser';
-import express from 'express';
+import logger from 'src/helpers/winston';
 
-const app = express();
-app.use(bodyParser.json());
-const port = 3000;
+import { startHTTPS } from './api';
 
-app.post('/shipment', async (_req: any, _res: any) => {
-});
+import { initializeDb } from './db/knex';
 
-app.post('/organization', (_req: any, _res: any) => {
-});
+async function starter() {
+  try {
+    await initializeDb();
+    const { close } = await startHTTPS();
+    setupGracefulShutdown(close);
+  } catch (err: any) {
+    logger.debug(err);
+    logger.error('unhandled exceptions received', {
+      exception: err.message,
+      stack: err.stack,
+    });
+    process.exit(1);
+  }
+}
 
-app.get('/shipments/:referenceId', (_req: any, _res: any) => {
-});
+function setupGracefulShutdown(exit: () => Promise<void>) {
+  const action = async () => {
+    await exit();
+    process.exit(0);
+  };
+  process.on('SIGINT', action);
+  process.on('SIGTERM', action);
+  process.on('SIGQUIT', action);
+  process.on('SIGUSR2', action);
+}
 
-app.get('/organizations/:id', (_req: any, _res: any) => {
-});
-
-app.listen(port, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Example app listening at http://localhost:${port}`);
-});
+void starter();

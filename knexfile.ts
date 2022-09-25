@@ -7,7 +7,7 @@ const knexConfig: Knex.Config = {
     const dbConfig = parse(process.env.DATABASE_URL || '');
 
     return {
-      host: dbConfig.host || 'localhost',
+      host: dbConfig.host || 'logixboard-db',
       port: Number(dbConfig.port) || 5432,
       user: dbConfig.user || 'postgres',
       password: dbConfig.password || '123',

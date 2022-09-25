@@ -15,7 +15,7 @@
                 "*"
             ],
             "src/*": [
-                "src/*"
+                "./src/*"
             ]
         },
         "moduleResolution": "node",
@@ -29,14 +29,15 @@
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,
         "resolveJsonModule": true,
-        "strictPropertyInitialization": false
+        "strictPropertyInitialization": false,
+        "allowJs": false
     },
     "include": [
-        "./src/**/*",
-        "./migrations/**/*"
+        "./src/**/*"
     ],
     "exclude": [
         ".git",
-        "node_modules"
+        "node_modules",
+        "migrations"
     ]
 }
