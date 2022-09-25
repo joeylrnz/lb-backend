@@ -236,7 +236,7 @@ components:
             - unit
           properties:
             weight:
-              type: integer
+              type: string
               description: Numeric value of the node weight
             unit:
               type: string
