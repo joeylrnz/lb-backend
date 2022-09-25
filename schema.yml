@@ -194,7 +194,8 @@ components:
         organizations:
           type: array
           items:
-            $ref: "#/components/schemas/Organization"
+            type: string
+            example: 'ABC'
         TransportPacks:
           $ref: "#/components/schemas/TransportPacks"
     Organization:
