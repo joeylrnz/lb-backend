@@ -1,14 +1,15 @@
 import crypto from 'crypto';
 
 import { db } from 'src/db/knex';
+import { convertFromKgToUnit, convertUnitToKg } from 'src/helpers/unitconversion';
 import { OrganizationService } from 'src/services/organization';
 import {
   IUpsertShipmentOpts,
   INode,
   IGetShipmentOpts,
-  IShipment
+  IShipment,
+  IGetWeightOpts
 } from 'src/services/shipment/interfaces';
-
 export class ShipmentService {
   static async upsertShipment(opts: IUpsertShipmentOpts): Promise<void> {
     await db('Shipment')
@@ -116,5 +117,30 @@ export class ShipmentService {
         })
       }
     };
+  }
+
+  static async getTotalWeight(opts: IGetWeightOpts): Promise<number> {
+    /**
+     * We'll put all weights to International System's KG
+     * and then transform to the unit asked by the user
+     */
+    
+    const nodes = await db('Node')
+      .select('weight', 'unit');
+
+    let totalKg = 0;
+    for (const node of nodes) {
+      if (node.unit !== 'KILOGRAMS') {
+        totalKg += convertUnitToKg(node.weight, node.unit);
+      } else {
+        totalKg += node.weight;
+      }
+    }
+
+    if (opts.unit !== 'KILOGRAMS') {
+      return convertFromKgToUnit(totalKg, opts.unit);
+    }
+
+    return totalKg;
   }
 }

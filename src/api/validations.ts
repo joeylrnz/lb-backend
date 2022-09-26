@@ -32,3 +32,15 @@ export const createOrganizationValidation = [
   body('id').isUUID(),
   body('code').isString()
 ];
+
+export const getWeightValidation = [
+  param('unit').isString().custom((value) => {
+    const allowedUnits = ['KILOGRAMS', 'POUNDS', 'OUNCES', 'SLUGS', 'GRAMS', 'MILLIGRAMS', 'TONS'];
+
+    if (!allowedUnits.includes(value)) {
+      return Promise.reject('unit is not available');
+    }
+
+    return true;
+  })
+];

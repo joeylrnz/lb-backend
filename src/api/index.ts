@@ -9,7 +9,8 @@ import {
   createOrganizationValidation,
   createShipmentValidation,
   getShipmentValidation,
-  getOrganizationValidation
+  getOrganizationValidation,
+  getWeightValidation
 } from './validations';
 
 export async function startHTTPS(): Promise<any> {
@@ -102,6 +103,27 @@ export async function startHTTPS(): Promise<any> {
     }
 
     res.status(200).json(response);
+  });
+
+  app.get('/shipments/weight/:unit', ...getWeightValidation, async (req: any, res: any) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    let response;
+    try {
+      response = await ShipmentService.getTotalWeight({
+        unit: req.params.unit
+      });
+    } catch (e: any) {
+      return res.status(500).json(e);
+    }
+
+    res.status(200).json({
+      totalWeight: response,
+      unit: req.params.unit
+    });
   });
 
   const server = app.listen(port, () => {

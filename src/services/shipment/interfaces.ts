@@ -29,3 +29,7 @@ export interface IShipment {
 export interface IGetShipmentOpts {
   referenceId: string;
 }
+
+export interface IGetWeightOpts {
+  unit: string;
+}
