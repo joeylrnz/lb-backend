@@ -40,20 +40,8 @@ paths:
                   type: string
                   format: uuid
       responses:
-        "200":
+        "204":
           description: Organization registered or updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uuid
-                    description: Unique identifier of the registered organization in the system
-                  code:
-                    type: string
-                    description: Code for organization
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -97,25 +85,16 @@ paths:
     post:
       tags:
         - Shipments
-      summary: Register a shipment
+      summary: Register or update a shipment
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Shipment"
+              $ref: "#/components/schemas/ShipmentRequest"
       responses:
-        "200":
-          description: Shipment successfully registered, returning unique identifier in the system
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uuid
-                    description: Unique identifier of the registered shipment in the system
+        "204":
+          description: Shipment successfully registered or updated
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -144,7 +123,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Shipment"
+                $ref: "#/components/schemas/ShipmentResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -186,7 +165,7 @@ components:
     default:
       description: Unknown error.
   schemas:
-    Shipment:
+    ShipmentRequest:
       type: object
       required:
         - type
@@ -207,6 +186,28 @@ components:
           items:
             type: string
             example: 'ABC'
+        TransportPacks:
+          $ref: "#/components/schemas/TransportPacks"
+    ShipmentResponse:
+      type: object
+      required:
+        - type
+        - referenceId
+        - organizations
+        - transportPacks
+      properties:
+        type:
+          type: string
+          enum: [SHIPMENT]
+          description: Type of the object. Only Shipment allowed.
+        referenceId:
+          type: string
+          example: "S00001175"
+          description: Arbitrary reference to this shipment
+        organizations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Organization"
         TransportPacks:
           $ref: "#/components/schemas/TransportPacks"
     Organization:
