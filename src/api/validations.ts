@@ -11,7 +11,7 @@ export const createShipmentValidation = [
   body('organizations').isArray(),
   body('transportPacks').isObject(),
   body('transportPacks.nodes').isArray(),
-  body('estimatedTimeArrival').isString().optional()
+  body('estimatedTimeArrival').isString().optional({ nullable: true })
 ];
 
 export const getOrganizationValidation = [

@@ -11,11 +11,11 @@ async function main() {
     }
 
     try {
-      await axios.post(`http://localhost:3000/${endpoint}`, message);
-    } catch (error) {
+      await axios.post(`http://localhost:3001/${endpoint}`, message);
+      console.log('message sent:', i);
+    } catch (error: any) {
       console.error(error.code);
     }
-
   }
 }
 

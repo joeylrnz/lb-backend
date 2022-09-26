@@ -41,17 +41,18 @@ export class ShipmentService {
       .whereNotIn('organization_id', organizationIds)
       .delete();
 
-    // Insert relations
-    await db('ShipmentOrganization')
-      .insert(organizationIds.map(organizationId => {
-        return {
-          shipment_id: opts.referenceId,
-          organization_id: organizationId
-        };
-      }))
-      .onConflict()
-      .ignore();
-
+    if (organizationIds.length > 0) {
+      // Insert relations
+      await db('ShipmentOrganization')
+        .insert(organizationIds.map(organizationId => {
+          return {
+            shipment_id: opts.referenceId,
+            organization_id: organizationId
+          };
+        }))
+        .onConflict()
+        .ignore();
+    }
     /** Delete all transportpacks/nodes because they don't have ids
      *  to check if they are the same
      */ 
@@ -65,27 +66,30 @@ export class ShipmentService {
     await db('Node')
       .whereIn('id', delNodeIds.map((node: any) => node.node_id))
       .delete();
+
+    if (opts.transportPacks.nodes.length > 0) {
     // Insert nodes
-    const nodeIds: string[] = [];
-    await db('Node').insert(opts.transportPacks.nodes.map((node: INode) => {
-      const nodeId = crypto.randomUUID();
-      nodeIds.push(nodeId);
+      const nodeIds: string[] = [];
+      await db('Node').insert(opts.transportPacks.nodes.map((node: INode) => {
+        const nodeId = crypto.randomUUID();
+        nodeIds.push(nodeId);
 
-      return {
-        id: nodeId,
-        weight: node.totalWeight.weight,
-        unit: node.totalWeight.unit
-      };
-    }));
-
-    // Insert TransportPacks relations
-    await db('ShipmentTransportPacks')
-      .insert(nodeIds.map((nodeId: string) => {
         return {
-          shipment_id: opts.referenceId,
-          node_id: nodeId
+          id: nodeId,
+          weight: node.totalWeight.weight,
+          unit: node.totalWeight.unit
         };
       }));
+
+      // Insert TransportPacks relations
+      await db('ShipmentTransportPacks')
+        .insert(nodeIds.map((nodeId: string) => {
+          return {
+            shipment_id: opts.referenceId,
+            node_id: nodeId
+          };
+        }));
+    }
   }
 
   static async getShipment(opts: IGetShipmentOpts): Promise<IShipment | undefined> {

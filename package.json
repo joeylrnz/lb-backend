@@ -9,7 +9,7 @@
     "db:migrate": "knex migrate:latest",
     "dev": "ts-node-dev -r tsconfig-paths/register --respawn src/index.ts",
     "lint:fix": "eslint --fix",
-    "send": "ts-node ./send-events.ts",
+    "send": "ts-node ./utils/send-events.ts",
     "start": "node .build/src/index.js",
     "test": "jest",
     "test:coverage": "NODE_ENV=test jest --runInBand --coverage",
