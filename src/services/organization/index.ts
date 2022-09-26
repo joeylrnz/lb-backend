@@ -1,6 +1,7 @@
 import { db } from 'src/db/knex';
 
-import { IGetOrganization, IGetOrganizationResponse, IUpsertOrganization } from './interfaces';
+import { IGetOrganization, IGetOrganizationResponse, IUpsertOrganization } from 'src/services/organization/interfaces';
+
 export class OrganizationService {
   static async upsertOrganization(opts: IUpsertOrganization): Promise<number[]> {
     const timestamp = (new Date()).toISOString();
@@ -19,15 +20,23 @@ export class OrganizationService {
   }
 
   static async getOrganization(opts: IGetOrganization): Promise<IGetOrganizationResponse | undefined> {
-    return db('Organization')
+    const organization = await db('Organization')
       .select('id', 'code')
       .where('id', opts.id)
       .first();
+    
+    return {
+      type: 'ORGANIZATION',
+      id: organization.id,
+      code: organization.code
+    };
   }
 
   static async getOrganizationIdByCode(codes: string[]): Promise<string[]> {
-    return db('Organization')
+    const response = await db('Organization')
       .select('id')
       .whereIn('code', codes);
+
+    return response.map(res => res.id);
   }
 }

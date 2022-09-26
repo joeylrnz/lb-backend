@@ -8,6 +8,13 @@ export interface IGetOrganization {
 }
 
 export interface IGetOrganizationResponse {
+  type: string;
+  id: string;
+  code: string;
+}
+
+export interface IOrganization {
+  type: string;
   id: string;
   code: string;
 }

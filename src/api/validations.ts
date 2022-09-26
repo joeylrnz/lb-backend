@@ -10,12 +10,16 @@ export const createShipmentValidation = [
   body('referenceId').isString(),
   body('organizations').isArray(),
   body('transportPacks').isObject(),
-  body('transportPacks.node').isArray(),
+  body('transportPacks.nodes').isArray(),
   body('estimatedTimeArrival').isString().optional()
 ];
 
-export const getValidation = [
+export const getOrganizationValidation = [
   param('id').isUUID()
+];
+
+export const getShipmentValidation = [
+  param('referenceId').isString()
 ];
 
 export const createOrganizationValidation = [

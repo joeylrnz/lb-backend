@@ -1,13 +1,16 @@
 import crypto from 'crypto';
 
 import { db } from 'src/db/knex';
-
 import { OrganizationService } from 'src/services/organization';
-
-import { IUpsertShipmentOpts, Node } from './interfaces';
+import {
+  IUpsertShipmentOpts,
+  INode,
+  IGetShipmentOpts,
+  IShipment
+} from 'src/services/shipment/interfaces';
 
 export class ShipmentService {
-  static async upsertShipment(opts: IUpsertShipmentOpts): Promise<IUpsertShipmentResponse> {
+  static async upsertShipment(opts: IUpsertShipmentOpts): Promise<void> {
     await db('Shipment')
       .insert({
         reference_id: opts.referenceId,
@@ -17,7 +20,7 @@ export class ShipmentService {
       .merge({
         estimated_time_arrival: opts.estimatedTimeArrival || null
       });
-    
+
     /**
      * Shipment-Organization relationship
      * Due to having to upsert, we need to do delete entries that
@@ -51,7 +54,7 @@ export class ShipmentService {
       .delete();
 
     const nodeIds: string[] = [];
-    await db('Node').insert(opts.transportPacks.nodes.map((node: Node) => {
+    await db('Node').insert(opts.transportPacks.nodes.map((node: INode) => {
       const nodeId = crypto.randomUUID();
       nodeIds.push(nodeId);
 
@@ -69,5 +72,49 @@ export class ShipmentService {
           node_id: nodeId
         };
       }));
+  }
+
+  static async getShipment(opts: IGetShipmentOpts): Promise<IShipment | undefined> {
+    const shipment = await db('Shipment')
+      .select('reference_id', 'estimated_time_arrival')
+      .where('reference_id', opts.referenceId)
+      .first();
+
+    if (!shipment) {
+      return;
+    }
+
+    const organizations = await db('ShipmentOrganization as so')
+      .innerJoin('Organization as o', 'o.id', '=', 'so.organization_id')
+      .where('so.shipment_id', shipment.reference_id)
+      .select('o.id as id', 'o.code as code');
+
+    const nodes = await db('ShipmentTransportPacks as stp')
+      .innerJoin('Node as n', 'n.id', '=', 'stp.node_id')
+      .where('stp.shipment_id', shipment.reference_id)
+      .select('n.weight as weight', 'n.unit as unit');
+
+    return {
+      type: 'SHIPMENT',
+      referenceId: shipment.referenceId,
+      organizations: organizations.map(org => {
+        return {
+          type: 'ORGANIZATION',
+          id: org.id,
+          code: org.code
+        };
+      }),
+      estimatedTimeArrival: shipment.estimated_time_arrival,
+      transportPacks: {
+        nodes: nodes.map((node) => {
+          return {
+            totalWeight: {
+              weight: node.weight,
+              unit: node.unit
+            }
+          };
+        })
+      }
+    };
   }
 }

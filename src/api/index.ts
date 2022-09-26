@@ -3,9 +3,14 @@ import { validationResult } from 'express-validator';
 
 import { OrganizationService } from 'src/services/organization';
 import { ShipmentService } from 'src/services/shipment';
-import { Node } from 'src/services/shipment/interfaces';
+import { INode } from 'src/services/shipment/interfaces';
 
-import { createOrganizationValidation, createShipmentValidation, getValidation } from './validations';
+import {
+  createOrganizationValidation,
+  createShipmentValidation,
+  getShipmentValidation,
+  getOrganizationValidation
+} from './validations';
 
 export async function startHTTPS(): Promise<any> {
   const app = express();
@@ -21,16 +26,20 @@ export async function startHTTPS(): Promise<any> {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const response = ShipmentService.upsertShipment({
-      referenceId: req.body.referenceId,
-      organizations: req.body.organizations,
-      estimatedTimeArrival: req.body.estimatedTimeArrival,
-      transportPacks: {
-        nodes: req.body.transportPacks.nodes as Node[]
-      }
-    });
+    try {
+      await ShipmentService.upsertShipment({
+        referenceId: req.body.referenceId,
+        organizations: req.body.organizations,
+        estimatedTimeArrival: req.body.estimatedTimeArrival,
+        transportPacks: {
+          nodes: req.body.transportPacks.nodes as INode[]
+        }
+      });
+    } catch (e: any) {
+      return res.send(500).json(e);
+    }
 
-    res.status(200).json('OK');
+    res.sendStatus(204);
   });
 
   app.post('/organization', ...createOrganizationValidation, async (req: any, res: any) => {
@@ -45,16 +54,13 @@ export async function startHTTPS(): Promise<any> {
         code: req.body.code
       });
     } catch (e: any) {
-      return res.sendStatus(500);
+      return res.send(500).json(e);
     }
 
-    res.status(200).json({
-      id: req.body.id,
-      code: req.body.code
-    });
+    res.sendStatus(204);
   });
 
-  app.get('/shipments/:referenceId', ...getValidation, async (req: any, res: any) => {
+  app.get('/shipments/:referenceId', ...getShipmentValidation, async (req: any, res: any) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -62,8 +68,8 @@ export async function startHTTPS(): Promise<any> {
 
     let response;
     try {
-      response = await OrganizationService.getOrganization({
-        id: req.body.id
+      response = await ShipmentService.getShipment({
+        referenceId: req.params.referenceId
       });
     } catch (e: any) {
       return res.sendStatus(500);
@@ -76,7 +82,7 @@ export async function startHTTPS(): Promise<any> {
     res.status(200).json(response);
   });
 
-  app.get('/organizations/:id', ...getValidation, async (req: any, res: any) => {
+  app.get('/organizations/:id', ...getOrganizationValidation, async (req: any, res: any) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
