@@ -11,6 +11,7 @@ export const createShipmentValidation = [
   body('organizations').isArray(),
   body('transportPacks').isObject(),
   body('transportPacks.node').isArray(),
+  body('estimatedTimeArrival').isString().optional()
 ];
 
 export const getValidation = [

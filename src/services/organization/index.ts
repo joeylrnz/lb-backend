@@ -24,4 +24,10 @@ export class OrganizationService {
       .where('id', opts.id)
       .first();
   }
+
+  static async getOrganizationIdByCode(codes: string[]): Promise<string[]> {
+    return db('Organization')
+      .select('id')
+      .whereIn('code', codes);
+  }
 }

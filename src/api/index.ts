@@ -2,6 +2,8 @@ import express from 'express';
 import { validationResult } from 'express-validator';
 
 import { OrganizationService } from 'src/services/organization';
+import { ShipmentService } from 'src/services/shipment';
+import { Node } from 'src/services/shipment/interfaces';
 
 import { createOrganizationValidation, createShipmentValidation, getValidation } from './validations';
 
@@ -19,7 +21,14 @@ export async function startHTTPS(): Promise<any> {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    console.log('/shipment');
+    const response = ShipmentService.upsertShipment({
+      referenceId: req.body.referenceId,
+      organizations: req.body.organizations,
+      estimatedTimeArrival: req.body.estimatedTimeArrival,
+      transportPacks: {
+        nodes: req.body.transportPacks.nodes as Node[]
+      }
+    });
 
     res.status(200).json('OK');
   });

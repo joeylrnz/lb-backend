@@ -3,8 +3,7 @@ import { Knex } from 'knex';
 export async function up(knex: Knex): Promise<void> {
   await knex.transaction(async trx => {
     await trx.schema.createTable('Shipment', (table) => {
-      table.uuid('id').primary();
-      table.string('reference_id').notNullable();
+      table.string('reference_id').primary().notNullable();
       table.timestamp('estimated_time_arrival');
       table.timestamp('created_at').notNullable().defaultTo(knex.fn.now());
       table.timestamp('updated_at').notNullable().defaultTo(knex.fn.now());
