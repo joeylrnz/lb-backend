@@ -29,15 +29,19 @@ export class ShipmentService {
      * At last, insert when it doesn't already exist
      */
     const organizationIds = await OrganizationService.getOrganizationIdByCode(opts.organizations);
+
+    // If found less ids than codes in the database -> inconsistency!
     if (organizationIds.length < opts.organizations.length) {
       throw new Error('Invalid organization entered');
     }
 
+    // Delete relations that doesn't exist anymore
     await db('ShipmentOrganization')
       .where('shipment_id', opts.referenceId)
       .whereNotIn('organization_id', organizationIds)
       .delete();
 
+    // Insert relations
     await db('ShipmentOrganization')
       .insert(organizationIds.map(organizationId => {
         return {
@@ -48,12 +52,20 @@ export class ShipmentService {
       .onConflict()
       .ignore();
 
-    await db('ShipmentTransportPacks')
+    /** Delete all transportpacks/nodes because they don't have ids
+     *  to check if they are the same
+     */ 
+    const delNodeIds: any = await db('ShipmentTransportPacks')
       .where({
         shipment_id: opts.referenceId
       })
+      .returning('node_id')
       .delete();
 
+    await db('Node')
+      .whereIn('id', delNodeIds.map((node: any) => node.node_id))
+      .delete();
+    // Insert nodes
     const nodeIds: string[] = [];
     await db('Node').insert(opts.transportPacks.nodes.map((node: INode) => {
       const nodeId = crypto.randomUUID();
@@ -66,6 +78,7 @@ export class ShipmentService {
       };
     }));
 
+    // Insert TransportPacks relations
     await db('ShipmentTransportPacks')
       .insert(nodeIds.map((nodeId: string) => {
         return {
@@ -97,7 +110,7 @@ export class ShipmentService {
 
     return {
       type: 'SHIPMENT',
-      referenceId: shipment.referenceId,
+      referenceId: shipment.reference_id,
       organizations: organizations.map(org => {
         return {
           type: 'ORGANIZATION',
@@ -105,7 +118,7 @@ export class ShipmentService {
           code: org.code
         };
       }),
-      estimatedTimeArrival: shipment.estimated_time_arrival,
+      estimatedTimeArrival: shipment.estimated_time_arrival || undefined,
       transportPacks: {
         nodes: nodes.map((node) => {
           return {

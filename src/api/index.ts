@@ -21,7 +21,7 @@ export async function startHTTPS(): Promise<any> {
   app.use(express.urlencoded({ extended: true }));
   const port = 3001;
 
-  app.post('/shipment', ...createShipmentValidation, async (req: any, res: any) => {
+  app.post('/shipment', ...createShipmentValidation, async (req: any, res: any, next: any) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -37,7 +37,8 @@ export async function startHTTPS(): Promise<any> {
         }
       });
     } catch (e: any) {
-      return res.send(500).json(e);
+      res.status(400).json(e.message);
+      next();
     }
 
     res.sendStatus(204);
@@ -55,7 +56,7 @@ export async function startHTTPS(): Promise<any> {
         code: req.body.code
       });
     } catch (e: any) {
-      return res.send(500).json(e);
+      return res.status(500).json(e.message);
     }
 
     res.sendStatus(204);
@@ -77,7 +78,7 @@ export async function startHTTPS(): Promise<any> {
     }
 
     if (!response) {
-      return res.status(400).string('Bad request: ID not found');
+      return res.status(400).json('Bad request: ID not found');
     }
 
     res.status(200).json(response);
@@ -95,11 +96,11 @@ export async function startHTTPS(): Promise<any> {
         id: req.params.id
       });
     } catch (e: any) {
-      return res.status(500).json(e);
+      return res.status(500).json(e.message);
     }
 
     if (!response) {
-      return res.status(400).string('Bad request: ID not found');
+      return res.status(400).json('Bad request: ID not found');
     }
 
     res.status(200).json(response);
