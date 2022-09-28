@@ -8,7 +8,7 @@ info:
     email: joey.lorenzo@gmail.com
 servers:
   - description: Localhost test server
-    url: "http://localhost#:3001/"
+    url: "http://localhost:3001/"
 tags:
   - name: Shipments
     description: Requests regarding Shipments
